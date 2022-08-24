@@ -9,6 +9,7 @@
 #include "Net/UnrealNetwork.h"
 #include "../../Weapon/Weapon.h"
 #include "../../BlasterComponents/CombatComponent.h"
+#include "Components/CapsuleComponent.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -34,6 +35,8 @@ ABlasterCharacter::ABlasterCharacter()
 	Combat->SetIsReplicated(true); //이 클래스가 항상 복제되도록 하는 코드
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
