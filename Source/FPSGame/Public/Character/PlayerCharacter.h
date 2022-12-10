@@ -31,6 +31,8 @@ private:
 	
 	void EquipButtonPressed();
 	void CrouchButtonPressed();
+	void AimButtonPressed();
+	void AimBuittonReleased();
 	
 
 private:
@@ -60,4 +62,5 @@ public:
 
 	bool IsWeaponEquipped();
 	
+	bool IsAiming();
 };
