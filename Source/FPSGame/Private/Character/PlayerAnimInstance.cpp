@@ -4,6 +4,7 @@
 #include "Character/PlayerAnimInstance.h"
 #include "Character/PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
@@ -29,4 +30,21 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bWeaponEquipped = PlayerCharacter->IsWeaponEquipped();
 	bIsCrouched = PlayerCharacter->bIsCrouched;
 	bAiming = PlayerCharacter->IsAiming();
+
+	//Offset Yaw for Strafing
+	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
+	//UE_LOG(LogTemp, Warning, TEXT("AimRotation Yaw : %f "), AimRotation.Yaw);
+	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PlayerCharacter->GetVelocity());
+	//UE_LOG(LogTemp, Warning, TEXT("MovementRotation Yaw: %f "), MovementRotation.Yaw);
+	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);
+	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaTime, 15.f);
+	YawOffset = DeltaRotation.Yaw;
+
+	CharacterRotationlastFrame = CharacterRotation;
+	CharacterRotation = PlayerCharacter->GetActorRotation();
+	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationlastFrame);
+	const float Target = Delta.Yaw / DeltaTime;
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 6.f);
+	Lean = FMath::Clamp(Interp, -90.f, 90.f);
+
 }
