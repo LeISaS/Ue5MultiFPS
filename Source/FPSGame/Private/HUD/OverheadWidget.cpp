@@ -15,15 +15,15 @@ void UOverheadWidget::SetDisplayText(FString TextToDisplay)
 
 void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 {
-	//ENetRole LocalLole = InPawn->GetLocalRole();
-	ENetRole RemoteRole = InPawn->GetRemoteRole();
+	ENetRole LocalLole = InPawn->GetLocalRole();
+	//ENetRole RemoteRole = InPawn->GetRemoteRole();
 
 	//APlayerState* PlayerState = GetOwningPlayerState();
 	//FString myName = PlayerState->GetPlayerName();
 
 	FString Role;
 
-	switch (RemoteRole)
+	switch (LocalLole)
 	{
 	case ROLE_None:
 		Role = FString("None");
@@ -38,11 +38,11 @@ void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 		Role = FString("Authority");
 		break;
 	}
-	//FString LocalRoleString = FString::Printf(TEXT("Local Role: %s"), *Role);
-	//SetDisplayText(LocalRoleString);
+	FString LocalRoleString = FString::Printf(TEXT("Local Role: %s"), *Role);
+	SetDisplayText(LocalRoleString);
 
-	FString RemoteRoleString = FString::Printf(TEXT("Remote Role: %s"), *Role);
-	SetDisplayText(RemoteRoleString);
+	/*FString RemoteRoleString = FString::Printf(TEXT("Remote Role: %s"), *Role);
+	SetDisplayText(RemoteRoleString);*/
 
 	//FString RemoteRoleString = FString::Printf(TEXT("Remote Role: %s"), *Role);
 	//SetDisplayText(myName);
