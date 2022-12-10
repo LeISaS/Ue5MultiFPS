@@ -244,3 +244,9 @@ bool APlayerCharacter::IsAiming()
 	return (Combat&&Combat->bAiming);
 }
 
+AWeapon* APlayerCharacter::GetEquippedWeapon()
+{
+	if (Combat == nullptr) return nullptr;
+	return Combat->EquippedWeapon;
+}
+
