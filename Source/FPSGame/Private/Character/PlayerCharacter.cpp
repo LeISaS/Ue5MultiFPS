@@ -9,6 +9,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 #include "PlayerComponents/CombatComponent.h"
+#include "Components/CapsuleComponent.h"
+
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -33,6 +35,8 @@ APlayerCharacter::APlayerCharacter()
 	Combat->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 void APlayerCharacter::BeginPlay()
@@ -132,6 +136,7 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation()
 		Combat->EquipWeapon(OverlappingWeapon);
 	}
 }
+
 void APlayerCharacter::CrouchButtonPressed()
 {
 	if (bIsCrouched)
