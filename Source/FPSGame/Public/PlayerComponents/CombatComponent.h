@@ -15,6 +15,8 @@ public:
 	UCombatComponent();
 	friend class APlayerCharacter;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 
 protected:
@@ -23,6 +25,8 @@ protected:
 
 private:
 	class APlayerCharacter* Character;
+
+	UPROPERTY(Replicated)
 	AWeapon* EquippedWeapon;
 
 public:	
