@@ -24,7 +24,7 @@ class FPSGAME_API AWeapon : public AActor
 public:	
 	AWeapon();
 	void ShowPickupWidget(bool bShowWidget);
-	void Fire();
+	virtual void Fire(const FVector& HitTarget);
 
 protected:
 	virtual void BeginPlay() override;
