@@ -35,6 +35,7 @@ private:
 	void AimButtonPressed();
 	void AimBuittonReleased();
 	void AimOffset(float DeltaTime);
+	virtual void Jump() override;
 	 
 
 private:
