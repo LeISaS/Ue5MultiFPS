@@ -24,6 +24,7 @@ class FPSGAME_API AWeapon : public AActor
 public:	
 	AWeapon();
 	void ShowPickupWidget(bool bShowWidget);
+	void Fire();
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,6 +52,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	class UAnimationAsset* FireAnimation;
 public:	
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
