@@ -14,7 +14,7 @@ class FPSGAME_API APlayerCharacter : public ACharacter
 
 public:
 	APlayerCharacter();
-
+	void PlayFireMontage(bool bAiming);
 protected:
 	virtual void BeginPlay() override;
 
@@ -23,6 +23,7 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents();
+
 
 private:
 	void MoveForward(float Value);
@@ -36,6 +37,8 @@ private:
 	void AimBuittonReleased();
 	void AimOffset(float DeltaTime);
 	virtual void Jump() override;
+	void FireButtonpressed();
+	void FireButtonReleased();
 	 
 
 private:
@@ -68,6 +71,8 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 
+	UPROPERTY(EditAnywhere,Category = Combat)
+	class UAnimMontage* FireWeaponMontage;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
