@@ -123,14 +123,14 @@ void AWeapon::Fire(const FVector& HitTarget)
 		if (AmmoEjectSocket)
 		{
 			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(WeaponMesh);
-		
+			int32 RandomRot  = FMath::RandRange(0, 360);
 			UWorld* World = GetWorld();
 			if (World)
 			{
 				World->SpawnActor<ACasing>(
 					CasingClass,
 					SocketTransform.GetLocation(),
-					SocketTransform.GetRotation().Rotator()
+					SocketTransform.GetRotation().Rotator() + FRotator(RandomRot, RandomRot, RandomRot)
 					);
 			}
 		}
