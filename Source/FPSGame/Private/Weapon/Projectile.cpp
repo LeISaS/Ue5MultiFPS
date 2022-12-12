@@ -60,13 +60,6 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpusle, const FHitResult& Hit)
 {
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->MulticastHit();
-	}
-
 	ServerHit();
 	Destroy();
 }

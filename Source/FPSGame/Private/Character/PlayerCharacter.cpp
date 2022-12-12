@@ -59,8 +59,17 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerCharacterController = Cast<APlayerCharacterController>(Controller);
-	
+	UpdateHUDHealth();
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddUniqueDynamic(this, &ThisClass::ReceiveDamage);
+	}
+}
+
+void APlayerCharacter::UpdateHUDHealth()
+{
+	PlayerCharacterController = PlayerCharacterController == nullptr ? Cast<APlayerCharacterController>(Controller) : PlayerCharacterController;
+
 	if (PlayerCharacterController)
 	{
 		PlayerCharacterController->SetHUDHealth(Health, MaxHealth);
@@ -150,11 +159,6 @@ void APlayerCharacter::PlayHitReactMontage()
 		FName SectionName("FromFront");
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
-}
-
-void APlayerCharacter::MulticastHit_Implementation()
-{
-	PlayHitReactMontage();
 }
 
 void APlayerCharacter::MoveForward(float Value)
@@ -348,6 +352,14 @@ void APlayerCharacter::SimProxiesTurn()
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
+void APlayerCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	PlayHitReactMontage();
+	UpdateHUDHealth();
+
+}
+
 
 void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
@@ -417,7 +429,8 @@ float APlayerCharacter::CalculateSpeed()
 
 void APlayerCharacter::OnRep_Health()
 {
-
+	PlayHitReactMontage();
+	UpdateHUDHealth();
 }
 
 void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)

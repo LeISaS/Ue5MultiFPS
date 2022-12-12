@@ -27,6 +27,8 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHit();
 
+	UPROPERTY(EditAnywhere)
+		float Damage = 20.f;
 public:	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* CollisionBox;
@@ -45,4 +47,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ImpactSound;
+
+
 };
