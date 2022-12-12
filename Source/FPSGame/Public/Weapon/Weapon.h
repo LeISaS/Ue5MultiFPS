@@ -26,6 +26,21 @@ public:
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void Fire(const FVector& HitTarget);
 
+	UPROPERTY(EditAnywhere, Category = Crosshair)
+		class UTexture2D* CrosshairsCenter;
+
+	UPROPERTY(EditAnywhere, Category = Crosshair)
+		UTexture2D* CrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, Category = Crosshair)
+		UTexture2D* CrosshairsRight;
+
+	UPROPERTY(EditAnywhere, Category = Crosshair)
+		UTexture2D* CrosshairsTop;
+
+	UPROPERTY(EditAnywhere, Category = Crosshair)
+		UTexture2D* CrosshairsBottom;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

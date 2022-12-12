@@ -10,6 +10,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PlayerController/PlayerCharacterController.h"
+#include "HUD/PlayerHUD.h"
+
 UCombatComponent::UCombatComponent() :
 	BaseWalkSpeed(600.f),
 	AimWalkSpeed(200.f)
@@ -40,7 +43,43 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	SetHUDCrosshairs(DeltaTime);
 }
+
+void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
+{
+	if (Character == nullptr || Character->Controller==nullptr) return;
+
+	Controller = Controller == nullptr ? Cast<APlayerCharacterController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		HUD = HUD == nullptr ? Cast<APlayerHUD>(Controller->GetHUD()) : HUD;
+		if (HUD)
+		{
+			FHUDPackage HUDPackage;
+			if (EquippedWeapon)
+			{
+				HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairsCenter;
+				HUDPackage.CrosshairLeft = EquippedWeapon->CrosshairsLeft;
+				HUDPackage.CrosshairRight = EquippedWeapon->CrosshairsRight;
+				HUDPackage.CrosshairTop = EquippedWeapon->CrosshairsTop;
+				HUDPackage.CrosshairBottom = EquippedWeapon->CrosshairsBottom;
+			}
+			else
+			{
+				HUDPackage.CrosshairCenter = nullptr;
+				HUDPackage.CrosshairLeft = nullptr;
+				HUDPackage.CrosshairRight = nullptr;
+				HUDPackage.CrosshairTop = nullptr;
+				HUDPackage.CrosshairBottom = nullptr;
+			}
+			HUD->SetHUDPackage(HUDPackage);
+		}
+	}
+
+}
+
 
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
@@ -126,18 +165,8 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			End,
 			ECollisionChannel::ECC_Visibility
 		);
-		/*if (!TraceHitResult.bBlockingHit)
-		{
-			TraceHitResult.ImpactPoint = End;
-			HitTarget = End;
-		}
-		else
-		{
-			HitTarget = TraceHitResult.ImpactPoint;
-		}*/
 	}
 }
-
 
 void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
 {
