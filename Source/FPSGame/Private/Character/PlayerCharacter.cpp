@@ -106,6 +106,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingWeapon,COND_OwnerOnly);
+	DOREPLIFETIME(APlayerCharacter, Health);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -405,6 +406,11 @@ float APlayerCharacter::CalculateSpeed()
 	FVector Velocity = GetVelocity();
 	Velocity.Z = 0.f;
 	return Velocity.Size();
+}
+
+void APlayerCharacter::OnRep_Health()
+{
+
 }
 
 void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
