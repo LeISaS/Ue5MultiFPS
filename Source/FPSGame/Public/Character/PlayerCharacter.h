@@ -92,6 +92,7 @@ private:
 	float CameraThreshold = 50.f;
 
 	bool bRotateRootBone;
+	UPROPERTY(EditAnywhere)
 	float TurnThreshold = 0.5f;
 	FRotator ProxyRotationLastFrame;
 	FRotator ProxyRotation;
