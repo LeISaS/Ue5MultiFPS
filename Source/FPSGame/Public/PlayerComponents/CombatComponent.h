@@ -62,6 +62,9 @@ private:
 
 	bool  bFireButtonPressed;
 	FVector HitTarget;
+
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
 public:	
 
 		
