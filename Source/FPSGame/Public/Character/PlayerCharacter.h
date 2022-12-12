@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PlayerTypes/TurningInPlace.h"
+#include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
-class FPSGAME_API APlayerCharacter : public ACharacter
+class FPSGAME_API APlayerCharacter : public ACharacter,public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 
