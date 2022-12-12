@@ -25,7 +25,7 @@ void ACasing::BeginPlay()
 	Super::BeginPlay();
 	
 	CasingMesh->OnComponentHit.AddUniqueDynamic(this, &ACasing::OnHit);
-	CasingMesh->AddImpulse(GetActorForwardVector()* ShellEjectionImpulse);
+	CasingMesh->AddImpulse(GetActorRightVector()* ShellEjectionImpulse);
 }
 
 void ACasing::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpusle, const FHitResult& Hit)
