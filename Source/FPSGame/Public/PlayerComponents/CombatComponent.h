@@ -44,7 +44,7 @@ protected:
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
-	void SetHUDCrosshairs(float DeltaTime);
+	void SetHUDCrosshairs(float DeltaTime,FHitResult& TraceHitResult);
 private:
 	class APlayerCharacter* Character;
 	class APlayerCharacterController* Controller;
@@ -70,7 +70,7 @@ private:
 	float CrosshairInAirFactor;
 	float CrosshairAimFactor;
 	float CrosshairShootingFactor;
-
+	float CrosshairPlayerAimFactor;
 	//FOV
 	float DefaultFOV;
 
