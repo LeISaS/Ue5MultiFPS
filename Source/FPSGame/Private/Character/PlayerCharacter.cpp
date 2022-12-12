@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/PlayerAnimInstance.h"
 #include "FPSGame/FPSGame.h"
+#include "PlayerController/PlayerCharacterController.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -57,7 +58,13 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerCharacterController = Cast<APlayerCharacterController>(Controller);
 	
+	if (PlayerCharacterController)
+	{
+		PlayerCharacterController->SetHUDHealth(Health, MaxHealth);
+	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)

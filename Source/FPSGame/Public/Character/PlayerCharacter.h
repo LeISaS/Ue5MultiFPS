@@ -110,6 +110,8 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
+	class APlayerCharacterController* PlayerCharacterController;
+
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
