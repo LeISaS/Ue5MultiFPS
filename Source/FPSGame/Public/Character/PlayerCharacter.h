@@ -16,6 +16,10 @@ class FPSGAME_API APlayerCharacter : public ACharacter,public IInteractWithCross
 public:
 	APlayerCharacter();
 	void PlayFireMontage(bool bAiming);
+
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastHit();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,6 +28,7 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents();
+	void PlayHitReactMontage();
 
 
 private:
@@ -74,6 +79,9 @@ private:
 
 	UPROPERTY(EditAnywhere,Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere,Category = Combat)
+	UAnimMontage* HitReactMontage;
 
 	void HideCameraIfCharacterClose();
 
