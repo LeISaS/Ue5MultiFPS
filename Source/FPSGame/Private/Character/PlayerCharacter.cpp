@@ -443,6 +443,7 @@ void APlayerCharacter::PoolInit()
 		if (PlayerCharacterState)
 		{
 			PlayerCharacterState->AddToScore(0.f);
+			PlayerCharacterState->AddToDeaths(0);
 		}
 	}
 }

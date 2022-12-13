@@ -151,6 +151,7 @@ private:
 	UPROPERTY(EditAnywhere,Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
 
+	UPROPERTY()
 	class APlayerCharacterState* PlayerCharacterState;
 
 public:

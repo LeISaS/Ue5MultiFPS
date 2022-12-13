@@ -61,3 +61,18 @@ void APlayerCharacterController::SetHUDScore(float Score)
 	}
 }
 
+void APlayerCharacterController::SetHUDDeath(int32 DeathCount)
+{
+	PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+
+	bool bHUDValid = PlayerHUD &&
+		PlayerHUD->CharacterOverlay &&
+		PlayerHUD->CharacterOverlay->DeathAmount;
+
+	if (bHUDValid)
+	{
+		FString DeathText = FString::Printf(TEXT("%d"), DeathCount);
+		PlayerHUD->CharacterOverlay->DeathAmount->SetText(FText::FromString(DeathText));
+	}
+}
+
