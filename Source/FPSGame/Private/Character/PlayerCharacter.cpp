@@ -14,6 +14,7 @@
 #include "Character/PlayerAnimInstance.h"
 #include "FPSGame/FPSGame.h"
 #include "PlayerController/PlayerCharacterController.h"
+#include "GameMode/PlayerGameMode.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -53,6 +54,11 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 	Super::OnRep_ReplicatedMovement();
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
+}
+
+void APlayerCharacter::Elim()
+{
+
 }
 
 void APlayerCharacter::BeginPlay()
@@ -357,6 +363,17 @@ void APlayerCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const UD
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	PlayHitReactMontage();
 	UpdateHUDHealth();
+
+	if (Health == 0.f)
+	{
+		APlayerGameMode* PlayerGameMode =  GetWorld()->GetAuthGameMode<APlayerGameMode>();
+		if (PlayerGameMode)
+		{
+			PlayerCharacterController = PlayerCharacterController == nullptr ? Cast<APlayerCharacterController>(Controller) : PlayerCharacterController;
+			APlayerCharacterController* AttackerController = Cast<APlayerCharacterController>(InstigatorController);
+			PlayerGameMode->PlayerEliminated(this, PlayerCharacterController,AttackerController);
+		}
+	}
 
 }
 
