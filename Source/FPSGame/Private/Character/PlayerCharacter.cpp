@@ -19,7 +19,8 @@
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
 	CameraBoom->TargetArmLength = 600.f;
@@ -56,12 +57,31 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 	TimeSinceLastMovementReplication = 0.f;
 }
 
-void APlayerCharacter::Elim_Implementation()
+void APlayerCharacter::Elim()
+{
+	MulticastElim();
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&ThisClass::ElimTimerFinished,
+		ElimDelay
+	);
+}
+
+void APlayerCharacter::MulticastElim_Implementation()
 {
 	bElimmed = true;
 	PlayElimMontage();
 }
 
+void APlayerCharacter::ElimTimerFinished()
+{
+	APlayerGameMode* PlayerGameMode = GetWorld()->GetAuthGameMode<APlayerGameMode>();
+	if (PlayerGameMode)
+	{
+		PlayerGameMode->RequestRespawn(this, Controller);
+	}
+}
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -160,6 +180,7 @@ void APlayerCharacter::PlayElimMontage()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && FireWeaponMontage)
 	{
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		AnimInstance->Montage_Play(ElimMontage);
 	}
 }
