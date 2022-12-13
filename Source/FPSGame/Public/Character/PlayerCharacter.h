@@ -58,6 +58,9 @@ private:
 
 	void PoolInit();
 
+	void QButtonPressed();
+	void EButtonPressed();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -153,6 +156,11 @@ private:
 
 	UPROPERTY()
 	class APlayerCharacterState* PlayerCharacterState;
+
+	UPROPERTY(EditAnywhere,Category= Combat)
+	float SocketOffsetY;
+	UPROPERTY(EditAnywhere,Category= Combat)
+	float SocketOffsetZ;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);

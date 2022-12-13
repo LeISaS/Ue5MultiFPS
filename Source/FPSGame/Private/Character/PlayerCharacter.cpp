@@ -16,7 +16,9 @@
 #include "PlayerController/PlayerCharacterController.h"
 #include "GameMode/PlayerGameMode.h"
 #include "PlayerState/PlayerCharacterState.h"
-APlayerCharacter::APlayerCharacter()
+APlayerCharacter::APlayerCharacter():
+	SocketOffsetY(75.f),
+	SocketOffsetZ(75.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -113,6 +115,8 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CameraBoom->SocketOffset = FVector(0.f, SocketOffsetY, SocketOffsetZ);
+
 	UpdateHUDHealth();
 	if (HasAuthority())
 	{
@@ -164,6 +168,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ThisClass::FireButtonpressed);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ThisClass::FireButtonReleased);
+
+	PlayerInputComponent->BindAction("QButton", IE_Pressed, this, &ThisClass::QButtonPressed);
+	PlayerInputComponent->BindAction("EButton", IE_Pressed, this, &ThisClass::EButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
@@ -446,6 +453,16 @@ void APlayerCharacter::PoolInit()
 			PlayerCharacterState->AddToDeaths(0);
 		}
 	}
+}
+
+void APlayerCharacter::QButtonPressed()
+{
+	CameraBoom->SocketOffset = FVector(0.f, -SocketOffsetY, SocketOffsetZ);
+}
+
+void APlayerCharacter::EButtonPressed()
+{
+	CameraBoom->SocketOffset = FVector(0.f, SocketOffsetY, SocketOffsetZ);
 }
 
 
