@@ -34,7 +34,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	EquippedWeapon = PlayerCharacter->GetEquippedWeapon();
 	TurningInPlace = PlayerCharacter->GetTurningInPlace();
 	bRotateRootBone = PlayerCharacter->ShouldRotateRootBone();
-
+	bElimmed = PlayerCharacter->IsElimmed();
 	//Offset Yaw for Strafing
 	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
 	//UE_LOG(LogTemp, Warning, TEXT("AimRotation Yaw : %f "), AimRotation.Yaw);
