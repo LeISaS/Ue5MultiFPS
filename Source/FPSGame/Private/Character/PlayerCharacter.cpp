@@ -48,6 +48,8 @@ APlayerCharacter::APlayerCharacter()
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
 void APlayerCharacter::OnRep_ReplicatedMovement()
@@ -72,6 +74,15 @@ void APlayerCharacter::MulticastElim_Implementation()
 {
 	bElimmed = true;
 	PlayElimMontage();
+
+	if (DissolveMaterialInstance)
+	{
+		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Glow"), 200.f);
+	}
+	StartDissolve();
 }
 
 void APlayerCharacter::ElimTimerFinished()
@@ -479,6 +490,24 @@ void APlayerCharacter::OnRep_Health()
 {
 	PlayHitReactMontage();
 	UpdateHUDHealth();
+}
+
+void APlayerCharacter::UpdateDissolveMaterial(float DissolveValue)
+{
+	if (DynamicDissolveMaterialInstance)
+	{
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveValue);
+	}
+}
+
+void APlayerCharacter::StartDissolve()
+{
+	DissolveTrack.BindDynamic(this,&ThisClass::UpdateDissolveMaterial);
+	if (DissolveCurve&& DissolveTimeline)
+	{
+		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+		DissolveTimeline->Play();
+	}
 }
 
 void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
