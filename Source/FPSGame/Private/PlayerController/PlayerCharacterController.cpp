@@ -6,13 +6,26 @@
 #include "HUD/CharacterOverlay.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-
+#include "Character/PlayerCharacter.h"
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	PlayerHUD = Cast<APlayerHUD>(GetHUD());
 }
+
+void APlayerCharacterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+
+	if (PlayerCharacter)
+	{
+		SetHUDHealth(PlayerCharacter->GetHealth(), PlayerCharacter->GetMaxHealth());
+	}
+}
+
 
 void APlayerCharacterController::SetHUDHealth(float Health, float MaxHealth)
 {
@@ -22,7 +35,7 @@ void APlayerCharacterController::SetHUDHealth(float Health, float MaxHealth)
 		PlayerHUD->CharacterOverlay &&
 		PlayerHUD->CharacterOverlay->HealthBar &&
 		PlayerHUD->CharacterOverlay->HealthText;
-	
+
 	if (bHUDValid)
 	{
 		const float HealthPercent = Health / MaxHealth;
@@ -32,3 +45,4 @@ void APlayerCharacterController::SetHUDHealth(float Health, float MaxHealth)
 	}
 	
 }
+
