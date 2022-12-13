@@ -46,3 +46,18 @@ void APlayerCharacterController::SetHUDHealth(float Health, float MaxHealth)
 	
 }
 
+void APlayerCharacterController::SetHUDScore(float Score)
+{
+	PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+
+	bool bHUDValid = PlayerHUD &&
+		PlayerHUD->CharacterOverlay &&
+		PlayerHUD->CharacterOverlay->ScoreAmount;
+
+	if (bHUDValid)
+	{
+		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
+		PlayerHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
+	}
+}
+

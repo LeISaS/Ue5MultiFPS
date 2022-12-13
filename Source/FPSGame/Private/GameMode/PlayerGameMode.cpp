@@ -6,8 +6,17 @@
 #include "PlayerController/PlayerCharacterController.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "PlayerState/PlayerCharacterState.h"
 void APlayerGameMode::PlayerEliminated(class APlayerCharacter* ElimmedCharacter, APlayerCharacterController* VictimController, APlayerCharacterController* AttackerController)
 {
+	APlayerCharacterState* AttackerPlayerState = AttackerController ? Cast<APlayerCharacterState>(AttackerController->PlayerState) : nullptr;
+	APlayerCharacterState* VictimPlayerState = VictimController ? Cast<APlayerCharacterState>(VictimController->PlayerState) : nullptr;
+
+	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+	{
+		AttackerPlayerState->AddToScore(1.f);
+	}
+
 	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Elim();

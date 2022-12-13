@@ -56,6 +56,8 @@ private:
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
 
+	void PoolInit();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -148,6 +150,8 @@ private:
 
 	UPROPERTY(EditAnywhere,Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+
+	class APlayerCharacterState* PlayerCharacterState;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);

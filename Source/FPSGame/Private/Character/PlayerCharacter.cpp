@@ -15,7 +15,7 @@
 #include "FPSGame/FPSGame.h"
 #include "PlayerController/PlayerCharacterController.h"
 #include "GameMode/PlayerGameMode.h"
-
+#include "PlayerState/PlayerCharacterState.h"
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -149,6 +149,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 
 	HideCameraIfCharacterClose();
+	PoolInit();
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -432,6 +433,18 @@ void APlayerCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const UD
 		}
 	}
 
+}
+
+void APlayerCharacter::PoolInit()
+{
+	if (PlayerCharacterState == nullptr)
+	{
+		PlayerCharacterState = GetPlayerState<APlayerCharacterState>();
+		if (PlayerCharacterState)
+		{
+			PlayerCharacterState->AddToScore(0.f);
+		}
+	}
 }
 
 
