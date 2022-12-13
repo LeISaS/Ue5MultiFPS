@@ -131,9 +131,7 @@ private:
 	void ElimTimerFinished();
 	
 	//Dissolve Effect
-	
-	
-	UPROPERTY(VisibleAnywhere)
+
 	UTimelineComponent* DissolveTimeline;
 
 	FOnTimelineFloat DissolveTrack;

@@ -83,6 +83,18 @@ void APlayerCharacter::MulticastElim_Implementation()
 		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Glow"), 200.f);
 	}
 	StartDissolve();
+
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+
+	if (PlayerCharacterController)
+	{
+		DisableInput(PlayerCharacterController);
+	}
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
 }
 
 void APlayerCharacter::ElimTimerFinished()
@@ -191,7 +203,6 @@ void APlayerCharacter::PlayElimMontage()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && FireWeaponMontage)
 	{
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		AnimInstance->Montage_Play(ElimMontage);
 	}
 }
