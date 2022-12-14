@@ -58,6 +58,8 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReload();
 
+	int32 AmountToReload();
+
 
 private:
 	UPROPERTY()
@@ -130,6 +132,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_CombatState();
+
+	void UpdateAmmoValues();
 public:	
 
 		
