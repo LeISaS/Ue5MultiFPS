@@ -48,6 +48,10 @@ public:
 		bool bAutomatic = true;
 
 	void Dropped();
+
+	virtual void OnRep_Owner() override;
+	void SetHUDAmmo();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -88,6 +92,22 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float ZoomInterpSpeed = 20.f;
+
+	UPROPERTY(EditAnywhere,ReplicatedUsing = OnRep_Ammo)
+	int32 Ammo;
+
+	UPROPERTY(EditAnywhere)
+	int32 MagCapacity;
+
+	UFUNCTION()
+	void OnRep_Ammo(); 
+
+	void SpendRound();
+
+	UPROPERTY()
+	class APlayerCharacter* PlayerOwnerCharacter;
+	UPROPERTY()
+	class APlayerCharacterController* PlayerOwnerController;
 public:	
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }

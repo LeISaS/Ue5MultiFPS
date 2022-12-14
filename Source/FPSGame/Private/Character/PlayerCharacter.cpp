@@ -78,6 +78,11 @@ void APlayerCharacter::Elim()
 
 void APlayerCharacter::MulticastElim_Implementation()
 {
+	if (PlayerCharacterController)
+	{
+		PlayerCharacterController->SetWeaponAmmo(0);
+	}
+
 	bElimmed = true;
 	PlayElimMontage();
 
