@@ -256,6 +256,10 @@ void UCombatComponent::FireTimerFinished()
 	{
 		Fire();
 	}
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
 }
 
 bool UCombatComponent::CanFire()
@@ -373,6 +377,11 @@ void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
 	if (Controller)
 	{
 		Controller->SetCarriedAmmo(CarriedAmmo);
+	}
+
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
