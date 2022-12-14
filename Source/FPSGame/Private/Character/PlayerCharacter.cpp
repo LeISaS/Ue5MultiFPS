@@ -16,6 +16,8 @@
 #include "PlayerController/PlayerCharacterController.h"
 #include "GameMode/PlayerGameMode.h"
 #include "PlayerState/PlayerCharacterState.h"
+#include "Weapon/WeaponTypes.h"
+
 APlayerCharacter::APlayerCharacter():
 	SocketOffsetY(75.f),
 	SocketOffsetZ(75.f)
@@ -177,6 +179,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("QButton", IE_Pressed, this, &ThisClass::QButtonPressed);
 	PlayerInputComponent->BindAction("EButton", IE_Pressed, this, &ThisClass::EButtonPressed);
 
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ThisClass::ReloadButtonPressed);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &ThisClass::Turn);
@@ -221,6 +225,27 @@ void APlayerCharacter::PlayElimMontage()
 	if (AnimInstance && FireWeaponMontage)
 	{
 		AnimInstance->Montage_Play(ElimMontage);
+	}
+}
+
+void APlayerCharacter::PlayReloadMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+		
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			SectionName = FName("Rifle");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 
@@ -316,6 +341,14 @@ void APlayerCharacter::AimBuittonReleased()
 	if (Combat)
 	{
 		Combat->SetAiming(false);
+	}
+}
+
+void APlayerCharacter::ReloadButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->Reload();
 	}
 }
 
