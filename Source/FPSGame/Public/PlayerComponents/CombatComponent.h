@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HUD/PlayerHUD.h"
 #include "Weapon/WeaponTypes.h"
+#include "PlayerTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
@@ -23,7 +24,8 @@ public:
 
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 	void Reload();
-
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -55,6 +57,7 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReload();
+
 
 private:
 	UPROPERTY()
@@ -121,6 +124,12 @@ private:
 	int32 StartingARAmmo = 45;
 
 	void InitializeCarriedAmmo();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+		ECombatState CombatState = ECombatState::ECS_Unoccupied;
+
+	UFUNCTION()
+	void OnRep_CombatState();
 public:	
 
 		
