@@ -364,3 +364,23 @@ void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
 	Character->bUseControllerRotationYaw = true;
 }
 
+void UCombatComponent::Reload()
+{
+	if (CarriedAmmo > 0)
+	{
+		ServerReload();
+		UE_LOG(LogTemp, Warning, TEXT("ServerReload"));
+	}
+}
+
+void UCombatComponent::ServerReload_Implementation()
+{
+	MulticastReload();
+}
+
+void UCombatComponent::MulticastReload_Implementation()
+{
+	if (Character == nullptr) return;
+
+	Character->PlayReloadMontage();
+}

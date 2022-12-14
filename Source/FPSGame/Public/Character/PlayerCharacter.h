@@ -18,6 +18,7 @@ public:
 	APlayerCharacter();
 	void PlayFireMontage(bool bAiming);
 	void PlayElimMontage();
+	void PlayReloadMontage();
 
 	virtual void OnRep_ReplicatedMovement() override;
 
@@ -47,6 +48,7 @@ private:
 	void CrouchButtonPressed();
 	void AimButtonPressed();
 	void AimBuittonReleased();
+	void ReloadButtonPressed();
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
 	virtual void Jump() override;
@@ -99,6 +101,9 @@ private:
 
 	UPROPERTY(EditAnywhere,Category = Combat)
 	UAnimMontage* ElimMontage;
+
+	UPROPERTY(EditAnywhere,Category = Combat)
+	UAnimMontage* ReloadMontage;
 
 	void HideCameraIfCharacterClose();
 
