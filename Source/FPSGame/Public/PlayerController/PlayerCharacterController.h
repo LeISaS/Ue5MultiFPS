@@ -22,10 +22,28 @@ public:
 	void SetCarriedAmmo(int32 Ammo);
 	void SetMatchCountdown(float  CountdownTime);
 	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual float GetServerTime();
+	virtual void ReceivedPlayer() override;
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void SetHUDTime();
+
+
+	UFUNCTION(Server, Reliable)
+		void ServerRequestServerTime(float TimeOfClientRequest);
+
+	UFUNCTION(Client, Reliable)
+		void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
+
+	float ClientServerDelta = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = Time)
+	float TimeSyncFrequency = 5.f;
+
+	float TimeSyncRunningTime = 0.f;
+	void CheckTimeSync(float DeltaTime);
 private:
 
 	class APlayerHUD* PlayerHUD;
