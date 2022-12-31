@@ -7,6 +7,32 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
 #include "PlayerState/PlayerCharacterState.h"
+
+APlayerGameMode::APlayerGameMode()
+{
+	bDelayedStart = true;
+}
+
+void APlayerGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+
+void APlayerGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds()+LevelStartingTime;
+		if (CountdownTime <= 0.f)
+		{
+			StartMatch();
+		}
+	}
+}
+
 void APlayerGameMode::PlayerEliminated(class APlayerCharacter* ElimmedCharacter, APlayerCharacterController* VictimController, APlayerCharacterController* AttackerController)
 {
 	APlayerCharacterState* AttackerPlayerState = AttackerController ? Cast<APlayerCharacterState>(AttackerController->PlayerState) : nullptr;
