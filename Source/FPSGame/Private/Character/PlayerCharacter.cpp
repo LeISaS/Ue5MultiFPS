@@ -67,8 +67,10 @@ void APlayerCharacter::Elim()
 {
 	if (Combat&& Combat->EquippedWeapon)
 	{
+		FireButtonReleased();
 		Combat->EquippedWeapon->Dropped();
 	}
+
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
@@ -106,8 +108,6 @@ void APlayerCharacter::MulticastElim_Implementation()
 	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-
 }
 
 void APlayerCharacter::ElimTimerFinished()

@@ -10,16 +10,15 @@
 #include "Character/PlayerCharacter.h"
 #include "Net/UnrealNetwork.h"
 #include "GameMode/PlayerGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	PlayerHUD = Cast<APlayerHUD>(GetHUD());
-	if (PlayerHUD)
-	{
-		PlayerHUD->AddAnnouncement();
-	}
+	ServerCheckMatchState();
+
 }
 
 void APlayerCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -39,10 +38,21 @@ void APlayerCharacterController::Tick(float DeltaTime)
 
 void APlayerCharacterController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
+	float TimeLeft = 0.f;
+	if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+
+	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (CountdownInt != SecondsLeft)
 	{
-		SetMatchCountdown(MatchTime - GetServerTime());
+		if (MatchState == MatchState::WaitingToStart)
+		{
+			SetHUDAnnouncemnetCountdown(TimeLeft);
+		}
+		if (MatchState == MatchState::InProgress)
+		{
+			SetMatchCountdown(TimeLeft);
+		}
 	}
 
 	CountdownInt = SecondsLeft;
@@ -74,6 +84,36 @@ void APlayerCharacterController::CheckTimeSync(float DeltaTime)
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 		TimeSyncRunningTime = 0.f;
+	}
+}
+
+
+
+void APlayerCharacterController::ServerCheckMatchState_Implementation()
+{
+	APlayerGameMode* GameMode = Cast<APlayerGameMode>(UGameplayStatics::GetGameMode(this));
+	if (GameMode)
+	{
+		WarmupTime = GameMode->WarmupTime;
+		MatchTime = GameMode->MatchTime;
+		LevelStartingTime = GameMode->LevelStartingTime;
+		MatchState = GameMode->GetMatchState();
+
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime);
+	}
+}
+
+void APlayerCharacterController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match, float StartingTime)
+{
+	WarmupTime = Warmup;
+	MatchTime = Match;
+	LevelStartingTime = StartingTime;
+	MatchState = StateOfMatch;
+	OnMatchStateSet(MatchState);
+
+	if (PlayerHUD && MatchState == MatchState::WaitingToStart)
+	{
+		PlayerHUD->AddAnnouncement();
 	}
 }
 
@@ -265,6 +305,25 @@ void APlayerCharacterController::SetMatchCountdown(float CountdownTime)
 
 		FString CountdownText = FString::Printf(TEXT("%2d:%2d"),Minutes,Seconds);
 		PlayerHUD->CharacterOverlay->MatchCountdownText->SetText(FText::FromString(CountdownText));
+
+	}
+}
+
+void APlayerCharacterController::SetHUDAnnouncemnetCountdown(float CountdownTime)
+{
+	PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+
+	bool bHUDValid = PlayerHUD &&
+		PlayerHUD->Announcement &&
+		PlayerHUD->Announcement->WarmupTime;
+
+	if (bHUDValid)
+	{
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
+		int32 Seconds = CountdownTime - Minutes * 60;
+
+		FString CountdownText = FString::Printf(TEXT("%2d:%2d"), Minutes, Seconds);
+		PlayerHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
 
 	}
 }
