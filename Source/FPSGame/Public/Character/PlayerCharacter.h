@@ -41,6 +41,7 @@ protected:
 	virtual void PostInitializeComponents();
 	void PlayHitReactMontage();
 
+	virtual void Destroyed() override;
 
 private:
 	void MoveForward(float Value);

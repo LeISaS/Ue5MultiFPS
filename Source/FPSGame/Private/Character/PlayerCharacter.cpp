@@ -17,6 +17,7 @@
 #include "GameMode/PlayerGameMode.h"
 #include "PlayerState/PlayerCharacterState.h"
 #include "Weapon/WeaponTypes.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerCharacter::APlayerCharacter():
 	SocketOffsetY(75.f),
@@ -67,7 +68,6 @@ void APlayerCharacter::Elim()
 {
 	if (Combat&& Combat->EquippedWeapon)
 	{
-		FireButtonReleased();
 		Combat->EquippedWeapon->Dropped();
 	}
 
@@ -103,6 +103,10 @@ void APlayerCharacter::MulticastElim_Implementation()
 	GetCharacterMovement()->StopMovementImmediately();
 
 	bDisableGameplay = true;
+	if (Combat)
+	{
+		Combat->FireButtonPressed(false);
+	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -245,6 +249,18 @@ void APlayerCharacter::PlayHitReactMontage()
 		AnimInstance->Montage_Play(HitReactMontage);
 		FName SectionName("FromFront");
 		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void APlayerCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	APlayerGameMode* PlayerGameMode = Cast<APlayerGameMode>(UGameplayStatics::GetGameMode(this));
+	bool bMatchNotInProgress = PlayerGameMode && PlayerGameMode->GetMatchState() != MatchState::InProgress;
+	if (Combat && Combat->EquippedWeapon && bMatchNotInProgress)
+	{
+		Combat->EquippedWeapon->Destroy();
 	}
 }
 

@@ -12,6 +12,9 @@
 #include "GameMode/PlayerGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerComponents/CombatComponent.h"
+#include "GameState/PlayerGameState.h"
+#include "PlayerState/PlayerCharacterState.h"
+
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -215,7 +218,37 @@ void APlayerCharacterController::HandleCooldown()
 			PlayerHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 			FString AnnouncementText("New Match Time :  ");
 			PlayerHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
-			PlayerHUD->Announcement->InfoText->SetText(FText());
+
+			APlayerGameState* PlayerGameState = Cast<APlayerGameState>(UGameplayStatics::GetGameState(this));
+			APlayerCharacterState* PlayerCharacterState = GetPlayerState<APlayerCharacterState>();
+
+			if (PlayerGameState)
+			{
+				TArray<APlayerCharacterState*> TopPlayers = PlayerGameState->TopScoringPlayers;
+				FString InfoTextString;
+				if (TopPlayers.Num() == 0)
+				{
+					InfoTextString = FString("Draw.");
+				}
+				else if (TopPlayers.Num() == 1 && TopPlayers[0] == PlayerCharacterState)
+				{
+					InfoTextString = FString("Winner!");
+				}
+				else if (TopPlayers.Num() == 1)
+				{
+					InfoTextString = FString::Printf(TEXT("Winner: \n%s"), *TopPlayers[0]->GetPlayerName());
+				}
+				else if (TopPlayers.Num() > 1)
+				{
+					InfoTextString = FString("Players tied for the win:\n");
+
+					for (auto TiedPlayer : TopPlayers)
+					{
+						InfoTextString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+					}
+				}
+				PlayerHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
+			}
 		}
 	}
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
