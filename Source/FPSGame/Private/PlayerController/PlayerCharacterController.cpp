@@ -11,7 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameMode/PlayerGameMode.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "PlayerComponents/CombatComponent.h"
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -217,6 +217,14 @@ void APlayerCharacterController::HandleCooldown()
 			PlayerHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
 			PlayerHUD->Announcement->InfoText->SetText(FText());
 		}
+	}
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+
+	if (PlayerCharacter && PlayerCharacter->GetCombat())
+	{
+		GetWorldTimerManager().ClearTimer(PlayerCharacter->GetElimTimerHandle());
+		PlayerCharacter->bDisableGameplay = true;
+		PlayerCharacter->GetCombat()->FireButtonPressed(false);
 	}
 }
 

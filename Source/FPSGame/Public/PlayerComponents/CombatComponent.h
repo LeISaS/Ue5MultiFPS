@@ -26,6 +26,8 @@ public:
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
+
+	void FireButtonPressed(bool bPressed);
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -38,7 +40,6 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
-	void FireButtonPressed(bool bPressed);
 
 	void Fire();
 

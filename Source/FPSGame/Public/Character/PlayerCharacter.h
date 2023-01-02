@@ -27,6 +27,8 @@ public:
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastElim();
 
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
 protected:
 	virtual void BeginPlay() override;
 
@@ -39,6 +41,7 @@ protected:
 	virtual void PostInitializeComponents();
 	void PlayHitReactMontage();
 
+
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -49,11 +52,12 @@ private:
 	void CrouchButtonPressed();
 	void AimButtonPressed();
 	void AimBuittonReleased();
+	void FireButtonpressed();
 	void ReloadButtonPressed();
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
 	virtual void Jump() override;
-	void FireButtonpressed();
+
 	void FireButtonReleased();
 	void SimProxiesTurn();
 	UFUNCTION()
@@ -63,6 +67,8 @@ private:
 
 	void QButtonPressed();
 	void EButtonPressed();
+
+	void RotateInPlace(float DeltaTime);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -185,5 +191,7 @@ public:
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	ECombatState GetCombatState() const;
-
+	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
+	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
+	FORCEINLINE FTimerHandle& GetElimTimerHandle()  { return ElimTimer; }
 };

@@ -102,10 +102,7 @@ void APlayerCharacter::MulticastElim_Implementation()
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
 
-	if (PlayerCharacterController)
-	{
-		DisableInput(PlayerCharacterController);
-	}
+	bDisableGameplay = true;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -145,19 +142,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
-	{
-		AimOffset(DeltaTime);
-	}
-	else
-	{
-		TimeSinceLastMovementReplication += DeltaTime;
-		if (TimeSinceLastMovementReplication > 0.25f)
-		{
-			OnRep_ReplicatedMovement();
-		}
-		CalculateAO_Pitch();
-	}
+	RotateInPlace(DeltaTime);
 
 	HideCameraIfCharacterClose();
 	PoolInit();
@@ -194,6 +179,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingWeapon,COND_OwnerOnly);
 	DOREPLIFETIME(APlayerCharacter, Health);
+	DOREPLIFETIME(APlayerCharacter, bDisableGameplay);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -264,6 +250,7 @@ void APlayerCharacter::PlayHitReactMontage()
 
 void APlayerCharacter::MoveForward(float Value)
 {
+	if (bDisableGameplay) return;
 	if (Controller != nullptr && Value != 0.f)
 	{
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
@@ -274,6 +261,7 @@ void APlayerCharacter::MoveForward(float Value)
 
 void APlayerCharacter::MoveRight(float Value)
 {
+	if (bDisableGameplay) return;
 	if (Controller != nullptr && Value != 0.f)
 	{
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
@@ -294,6 +282,8 @@ void APlayerCharacter::LookUp(float Value)
 
 void APlayerCharacter::EquipButtonPressed()
 {
+	if (bDisableGameplay) return;
+
 	if (Combat )
 	{
 		if (HasAuthority())
@@ -318,6 +308,8 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation()
 
 void APlayerCharacter::CrouchButtonPressed()
 {
+	if (bDisableGameplay) return;
+
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -330,6 +322,7 @@ void APlayerCharacter::CrouchButtonPressed()
 
 void APlayerCharacter::AimButtonPressed()
 {
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->SetAiming(true);
@@ -338,6 +331,7 @@ void APlayerCharacter::AimButtonPressed()
 
 void APlayerCharacter::AimBuittonReleased()
 {
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->SetAiming(false);
@@ -346,6 +340,7 @@ void APlayerCharacter::AimBuittonReleased()
 
 void APlayerCharacter::ReloadButtonPressed()
 {
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->Reload();
@@ -399,6 +394,7 @@ void APlayerCharacter::CalculateAO_Pitch()
 
 void APlayerCharacter::Jump()
 {
+	if (bDisableGameplay) return;
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -411,6 +407,7 @@ void APlayerCharacter::Jump()
 
 void APlayerCharacter::FireButtonpressed()
 {
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->FireButtonPressed(true);
@@ -419,6 +416,7 @@ void APlayerCharacter::FireButtonpressed()
 
 void APlayerCharacter::FireButtonReleased()
 {
+	if (bDisableGameplay) return;
 	if (Combat)
 	{
 		Combat->FireButtonPressed(false);
@@ -503,6 +501,28 @@ void APlayerCharacter::EButtonPressed()
 	CameraBoom->SocketOffset = FVector(0.f, SocketOffsetY, SocketOffsetZ);
 }
 
+void APlayerCharacter::RotateInPlace(float DeltaTime)
+{
+	if (bDisableGameplay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		AimOffset(DeltaTime);
+	}
+	else
+	{
+		TimeSinceLastMovementReplication += DeltaTime;
+		if (TimeSinceLastMovementReplication > 0.25f)
+		{
+			OnRep_ReplicatedMovement();
+		}
+		CalculateAO_Pitch();
+	}
+}
 
 void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
