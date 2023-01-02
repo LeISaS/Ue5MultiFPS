@@ -3,6 +3,7 @@
 
 #include "PlayerController/PlayerCharacterController.h"
 #include "HUD/PlayerHUD.h"
+#include "HUD/Announcement.h"
 #include "HUD/CharacterOverlay.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -15,6 +16,10 @@ void APlayerCharacterController::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerHUD = Cast<APlayerHUD>(GetHUD());
+	if (PlayerHUD)
+	{
+		PlayerHUD->AddAnnouncement();
+	}
 }
 
 void APlayerCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -109,11 +114,7 @@ void APlayerCharacterController::OnMatchStateSet(FName State)
 
 	if (MatchState == MatchState::InProgress)
 	{
-		PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
-		if (PlayerHUD)
-		{
-			PlayerHUD->AddCharacterOverlay();
-		}
+		HandleMatchHasStarted();
 	}
 }
 
@@ -121,10 +122,19 @@ void APlayerCharacterController::OnRep_MatchState()
 {
 	if (MatchState == MatchState::InProgress)
 	{
-		PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
-		if (PlayerHUD)
+		HandleMatchHasStarted();
+	}
+}
+
+void APlayerCharacterController::HandleMatchHasStarted()
+{
+	PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+	if (PlayerHUD)
+	{
+		PlayerHUD->AddCharacterOverlay();
+		if (PlayerHUD->Announcement)
 		{
-			PlayerHUD->AddCharacterOverlay();
+			PlayerHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
