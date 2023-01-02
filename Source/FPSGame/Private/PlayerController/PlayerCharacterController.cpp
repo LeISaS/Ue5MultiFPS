@@ -7,6 +7,9 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Character/PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
+#include "GameMode/PlayerGameMode.h"
+
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -14,11 +17,19 @@ void APlayerCharacterController::BeginPlay()
 	PlayerHUD = Cast<APlayerHUD>(GetHUD());
 }
 
+void APlayerCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayerCharacterController, MatchState);
+}
+
 void APlayerCharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	SetHUDTime();
 	CheckTimeSync(DeltaTime);
+	PoollInit();
 }
 
 void APlayerCharacterController::SetHUDTime()
@@ -30,6 +41,25 @@ void APlayerCharacterController::SetHUDTime()
 	}
 
 	CountdownInt = SecondsLeft;
+}
+
+void APlayerCharacterController::PoollInit()
+{
+	if (CharacterOverlay == nullptr)
+	{
+		if (PlayerHUD && PlayerHUD->CharacterOverlay)
+		{
+			CharacterOverlay = PlayerHUD->CharacterOverlay;
+			if (CharacterOverlay)
+			{
+				SetHUDHealth(HUDHealth, HUDMaxHealth);
+				SetHUDScore(HUDScore);
+				SetHUDDeath(HUDDefeats);
+
+			}
+
+		}
+	}
 }
 
 void APlayerCharacterController::CheckTimeSync(float DeltaTime)
@@ -73,6 +103,31 @@ void APlayerCharacterController::ReceivedPlayer()
 	}
 }
 
+void APlayerCharacterController::OnMatchStateSet(FName State)
+{
+	MatchState = State;
+
+	if (MatchState == MatchState::InProgress)
+	{
+		PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+		if (PlayerHUD)
+		{
+			PlayerHUD->AddCharacterOverlay();
+		}
+	}
+}
+
+void APlayerCharacterController::OnRep_MatchState()
+{
+	if (MatchState == MatchState::InProgress)
+	{
+		PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+		if (PlayerHUD)
+		{
+			PlayerHUD->AddCharacterOverlay();
+		}
+	}
+}
 
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
@@ -104,6 +159,12 @@ void APlayerCharacterController::SetHUDHealth(float Health, float MaxHealth)
 		FString HealthText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
 		PlayerHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+		HUDHealth = Health;
+		HUDMaxHealth = MaxHealth;
+	}
 	
 }
 
@@ -120,6 +181,11 @@ void APlayerCharacterController::SetHUDScore(float Score)
 		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
 		PlayerHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
 	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+		HUDScore = Score;
+	}
 }
 
 void APlayerCharacterController::SetHUDDeath(int32 DeathCount)
@@ -134,6 +200,11 @@ void APlayerCharacterController::SetHUDDeath(int32 DeathCount)
 	{
 		FString DeathText = FString::Printf(TEXT("%d"), DeathCount);
 		PlayerHUD->CharacterOverlay->DeathAmount->SetText(FText::FromString(DeathText));
+	}
+	else
+	{
+		bInitializeCharacterOverlay = true;
+		HUDDefeats = DeathCount;
 	}
 }
 
