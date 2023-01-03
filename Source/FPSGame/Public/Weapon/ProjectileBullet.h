@@ -13,7 +13,9 @@ UCLASS()
 class FPSGAME_API AProjectileBullet : public AProjectile
 {
 	GENERATED_BODY()
-	
+public:
+	AProjectileBullet();
+
 protected:
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpusle, const FHitResult& Hit) override;
 
