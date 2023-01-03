@@ -18,8 +18,12 @@ public:
 	AProjectileRocket();
 protected:
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpusle, const FHitResult& Hit) override;
+	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* TrailSystem;
 
 private:
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* RocketMesh;
+	UStaticMeshComponent* RocketMesh;
 };
