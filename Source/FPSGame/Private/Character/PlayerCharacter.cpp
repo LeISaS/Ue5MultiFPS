@@ -103,6 +103,7 @@ void APlayerCharacter::MulticastElim_Implementation()
 	GetCharacterMovement()->StopMovementImmediately();
 
 	bDisableGameplay = true;
+	GetCharacterMovement()->DisableMovement();
 	if (Combat)
 	{
 		Combat->FireButtonPressed(false);
