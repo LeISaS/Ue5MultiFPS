@@ -54,6 +54,7 @@ public:
 	void SetHUDAmmo();
 	void AddAmmo(int32 AmmoToAdd);
 
+	void EnableCustomDepth(bool bEnable);
 
 protected:
 	virtual void BeginPlay() override;
