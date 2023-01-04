@@ -46,8 +46,6 @@ protected:
 
 	virtual void Destroyed() override;
 
-
-
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -200,4 +198,5 @@ public:
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 	FORCEINLINE FTimerHandle& GetElimTimerHandle()  { return ElimTimer; }
+	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 };
