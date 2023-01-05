@@ -566,8 +566,9 @@ void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
 
 void UCombatComponent::Reload()
 {
-	if (CombatState == ECombatState::ECS_ThrowingGrenade ||
+	if (EquippedWeapon == nullptr|| CombatState == ECombatState::ECS_ThrowingGrenade ||
 		EquippedWeapon->GetAmmo() == EquippedWeapon->GetMagCapcity()) return;
+
 	if (CarriedAmmo > 0 && CombatState!=ECombatState::ECS_Reloading)
 	{
 		ServerReload();
