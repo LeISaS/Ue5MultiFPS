@@ -141,6 +141,10 @@ void APlayerCharacter::BeginPlay()
 	{
 		OnTakeAnyDamage.AddUniqueDynamic(this, &ThisClass::ReceiveDamage);
 	}
+	if (AttachedGrenade)
+	{
+		AttachedGrenade->SetVisibility(false);
+	}
 }
 
 void APlayerCharacter::UpdateHUDHealth()
