@@ -33,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* AttachedGrenade;
 protected:
 	virtual void BeginPlay() override;
 
