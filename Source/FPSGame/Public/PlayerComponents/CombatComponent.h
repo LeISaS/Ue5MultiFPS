@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class TSubclassOf<class AProjectile> GrenadeClass;
 
+	UFUNCTION(Server,Reliable)
+	void ServerLaunchGrenade(const FVector_NetQuantize& Target);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
