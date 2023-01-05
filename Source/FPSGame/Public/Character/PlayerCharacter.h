@@ -20,6 +20,7 @@ public:
 	void PlayFireMontage(bool bAiming);
 	void PlayElimMontage();
 	void PlayReloadMontage();
+	void PlayThrowGrenadeMontage();
 
 	virtual void OnRep_ReplicatedMovement() override;
 
@@ -73,6 +74,7 @@ private:
 	void EButtonPressed();
 
 	void RotateInPlace(float DeltaTime);
+	void GrenadeButtonPressed();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -115,6 +117,9 @@ private:
 
 	UPROPERTY(EditAnywhere,Category = Combat)
 	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ThrowGrenadeMontage;
 
 	void HideCameraIfCharacterClose();
 

@@ -175,6 +175,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("QButton", IE_Pressed, this, &ThisClass::QButtonPressed);
 	PlayerInputComponent->BindAction("EButton", IE_Pressed, this, &ThisClass::EButtonPressed);
 
+	PlayerInputComponent->BindAction("ThrowGrenade", IE_Pressed, this, &ThisClass::GrenadeButtonPressed);
+
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ThisClass::ReloadButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
@@ -260,6 +262,15 @@ void APlayerCharacter::PlayReloadMontage()
 			break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void APlayerCharacter::PlayThrowGrenadeMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ThrowGrenadeMontage)
+	{
+		AnimInstance->Montage_Play(ThrowGrenadeMontage);
 	}
 }
 
@@ -561,6 +572,14 @@ void APlayerCharacter::RotateInPlace(float DeltaTime)
 			OnRep_ReplicatedMovement();
 		}
 		CalculateAO_Pitch();
+	}
+}
+
+void APlayerCharacter::GrenadeButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->ThrowGrenade();
 	}
 }
 
