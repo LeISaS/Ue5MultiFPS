@@ -72,6 +72,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenadeFinished();
 
+	void DropEquippedWeapon();
+
+	void AttachActorToRightHand(AActor* ActorToAttach);
+	void AttachActorToLeftHand(AActor* ActorToAttach);
+	void UpdateCarriedAmmo();
+	void ReloadEmptyWeapon();
 
 private:
 	UPROPERTY()
