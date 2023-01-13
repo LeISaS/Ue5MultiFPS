@@ -16,6 +16,7 @@ class FPSGAME_API APlayerCharacterController : public APlayerController
 	
 public:
 	void SetHUDHealth(float Health, float MaxHealth);
+	void SetHUDShield(float Shield, float MaxShield);
 	void SetHUDScore(float Score);
 	void SetHUDDeath(int32 DeathCount);
 	void SetWeaponAmmo(int32 Ammo);
@@ -80,10 +81,21 @@ private:
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 
-	bool bInitializeCharacterOverlay = false;
+
 	float HUDHealth;
 	float HUDMaxHealth;
+	bool bInitializeHealth = false;
+
 	float HUDScore;
+	bool bInitializeScore = false;
+
 	int32 HUDDefeats;
+	bool bInitializeDefeats = false;
+
 	int32 HUDGrenades;
+	bool bInitializeGrenades = false;
+
+	float HUDShield;
+	float HUDMaxShield;
+	bool bInitializeShield = false;
 };

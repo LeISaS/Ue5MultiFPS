@@ -141,6 +141,7 @@ void APlayerCharacter::BeginPlay()
 	CameraBoom->SocketOffset = FVector(0.f, SocketOffsetY, SocketOffsetZ);
 
 	UpdateHUDHealth();
+	UpdateHUDShield();
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddUniqueDynamic(this, &ThisClass::ReceiveDamage);
@@ -158,6 +159,16 @@ void APlayerCharacter::UpdateHUDHealth()
 	if (PlayerCharacterController)
 	{
 		PlayerCharacterController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+void APlayerCharacter::UpdateHUDShield()
+{
+	PlayerCharacterController = PlayerCharacterController == nullptr ? Cast<APlayerCharacterController>(Controller) : PlayerCharacterController;
+
+	if (PlayerCharacterController)
+	{
+		PlayerCharacterController->SetHUDShield(Shield, MaxShield);
 	}
 }
 
@@ -204,6 +215,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingWeapon,COND_OwnerOnly);
 	DOREPLIFETIME(APlayerCharacter, Health);
+	DOREPLIFETIME(APlayerCharacter, Shield);
 	DOREPLIFETIME(APlayerCharacter, bDisableGameplay);
 }
 
@@ -531,9 +543,28 @@ void APlayerCharacter::SimProxiesTurn()
 void APlayerCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
 	if (bElimmed) return;
-	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+
+	float DamageToHealth = Damage;
+
+	if (Shield > 0.f)
+	{
+		if (Shield >= Damage)
+		{
+			Shield = FMath::Clamp(Shield - Damage, 0.f, MaxShield);
+			DamageToHealth = 0.f;
+		}
+		else
+		{
+			Shield = 0.f;
+			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0.f, Damage);
+		}
+	}
+	Health = FMath::Clamp(Health - DamageToHealth, 0.f, MaxHealth);
+
+
 	PlayHitReactMontage();
 	UpdateHUDHealth();
+	UpdateHUDShield();
 
 	if (Health == 0.f)
 	{
@@ -672,6 +703,15 @@ void APlayerCharacter::OnRep_Health(float LastHealth)
 {
 	UpdateHUDHealth();
 	if (Health < LastHealth)
+	{
+		PlayHitReactMontage();
+	}
+}
+
+void APlayerCharacter::OnRep_Shield(float LastShield)
+{
+	UpdateHUDShield();
+	if (Shield < LastShield)
 	{
 		PlayHitReactMontage();
 	}

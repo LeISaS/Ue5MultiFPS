@@ -38,6 +38,7 @@ public:
 	UStaticMeshComponent* AttachedGrenade;
 
 	void UpdateHUDHealth();
+	void UpdateHUDShield();
 protected:
 	virtual void BeginPlay() override;
 
@@ -151,6 +152,16 @@ private:
 	UFUNCTION()
 	void OnRep_Health(float LastHealth);
 
+	//Shield
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+		float MaxShield = 100.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Shield, VisibleAnywhere, Category = "Player Stats")
+		float Shield = 100.f;
+
+	UFUNCTION()
+		void OnRep_Shield(float LastShield);
+
 	class APlayerCharacterController* PlayerCharacterController;
 	
 	bool bElimmed = false;
@@ -213,4 +224,7 @@ public:
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE UBuffComponent* GetBuff()const { return Buff; }
+
+	FORCEINLINE float GetShield() const { return Shield; }
+	FORCEINLINE float GetMaxShield() const { return MaxShield; }
 };

@@ -81,14 +81,15 @@ void APlayerCharacterController::PoollInit()
 			CharacterOverlay = PlayerHUD->CharacterOverlay;
 			if (CharacterOverlay)
 			{
-				SetHUDHealth(HUDHealth, HUDMaxHealth);
-				SetHUDScore(HUDScore);
-				SetHUDDeath(HUDDefeats);
+				if(bInitializeHealth) SetHUDHealth(HUDHealth, HUDMaxHealth);
+				if(bInitializeShield) SetHUDShield(HUDShield, HUDMaxShield);
+				if(bInitializeScore) SetHUDScore(HUDScore);
+				if(bInitializeDefeats) SetHUDDeath(HUDDefeats);
 
 				APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 				if (PlayerCharacter && PlayerCharacter->GetCombat())
 				{
-					SetHUDGrenades(PlayerCharacter->GetCombat()->GetGrenades());
+					if(bInitializeGrenades) SetHUDGrenades(PlayerCharacter->GetCombat()->GetGrenades());
 				}
 			}
 		}
@@ -276,6 +277,7 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	if (PlayerCharacter)
 	{
 		SetHUDHealth(PlayerCharacter->GetHealth(), PlayerCharacter->GetMaxHealth());
+		SetHUDShield(PlayerCharacter->GetShield(), PlayerCharacter->GetMaxShield());
 	}
 }
 
@@ -299,11 +301,35 @@ void APlayerCharacterController::SetHUDHealth(float Health, float MaxHealth)
 	}
 	else
 	{
-		bInitializeCharacterOverlay = true;
+		bInitializeHealth = true;
 		HUDHealth = Health;
 		HUDMaxHealth = MaxHealth;
 	}
 	
+}
+
+void APlayerCharacterController::SetHUDShield(float Shield, float MaxShield)
+{
+	PlayerHUD = PlayerHUD == nullptr ? Cast<APlayerHUD>(GetHUD()) : PlayerHUD;
+
+	bool bHUDValid = PlayerHUD &&
+		PlayerHUD->CharacterOverlay &&
+		PlayerHUD->CharacterOverlay->ShieldBar &&
+		PlayerHUD->CharacterOverlay->ShieldText;
+
+	if (bHUDValid)
+	{
+		const float ShieldPercent = Shield / MaxShield;
+		PlayerHUD->CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
+		FString ShieldText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));
+		PlayerHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));
+	}
+	else
+	{
+		bInitializeShield = true;
+		HUDShield = Shield;
+		HUDMaxShield = MaxShield;
+	}
 }
 
 void APlayerCharacterController::SetHUDScore(float Score)
@@ -321,7 +347,7 @@ void APlayerCharacterController::SetHUDScore(float Score)
 	}
 	else
 	{
-		bInitializeCharacterOverlay = true;
+		bInitializeScore = true;
 		HUDScore = Score;
 	}
 }
@@ -341,7 +367,7 @@ void APlayerCharacterController::SetHUDDeath(int32 DeathCount)
 	}
 	else
 	{
-		bInitializeCharacterOverlay = true;
+		bInitializeDefeats = true;
 		HUDDefeats = DeathCount;
 	}
 }
@@ -442,6 +468,7 @@ void APlayerCharacterController::SetHUDGrenades(int32 Grenades)
 	}
 	else
 	{
+		bInitializeGrenades = true;
 		HUDGrenades = Grenades;
 	}
 }
