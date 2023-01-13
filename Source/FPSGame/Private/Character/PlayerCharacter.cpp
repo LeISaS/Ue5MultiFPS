@@ -666,10 +666,13 @@ float APlayerCharacter::CalculateSpeed()
 	return Velocity.Size();
 }
 
-void APlayerCharacter::OnRep_Health()
+void APlayerCharacter::OnRep_Health(float LastHealth)
 {
-	PlayHitReactMontage();
 	UpdateHUDHealth();
+	if (Health < LastHealth)
+	{
+		PlayHitReactMontage();
+	}
 }
 
 void APlayerCharacter::UpdateDissolveMaterial(float DissolveValue)
