@@ -17,6 +17,8 @@ public:
 	friend class APlayerCharacter;
 
 	void Heal(float HealAmount, float HealingTime);
+	void BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float BuffTime);
+	void SetInitalSpeeds(float BaseSpeed, float CrouchSpeed);
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,6 +32,14 @@ private:
 	float HealingRate = 0;
 	float AmountToHeal = 0.f;
 
+	FTimerHandle SpeedBuffTimer;
+	void ResetSpeeds();
+
+	float InitialBaseSpeed;
+	float InitailCrouchSpeed;
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastSpeedBuff(float BaseSpeed, float CrouchSpeed);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
