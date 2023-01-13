@@ -9,6 +9,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 #include "PlayerComponents/CombatComponent.h"
+#include "PlayerComponents/BuffComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/PlayerAnimInstance.h"
@@ -43,6 +44,9 @@ APlayerCharacter::APlayerCharacter():
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
+
+	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	Buff->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -209,6 +213,10 @@ void APlayerCharacter::PostInitializeComponents()
 	if (Combat)
 	{
 		Combat->Character = this;
+	}
+	if (Buff)
+	{
+		Buff->Character = this;
 	}
 }
 
