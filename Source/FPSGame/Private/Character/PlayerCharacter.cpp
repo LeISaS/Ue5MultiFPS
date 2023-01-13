@@ -218,6 +218,7 @@ void APlayerCharacter::PostInitializeComponents()
 	{
 		Buff->Character = this;
 		Buff->SetInitalSpeeds(GetCharacterMovement()->MaxWalkSpeed, GetCharacterMovement()->MaxWalkSpeedCrouched);
+		Buff->SetInitalJumpVelocity(GetCharacterMovement()->JumpZVelocity);
 	}
 }
 
