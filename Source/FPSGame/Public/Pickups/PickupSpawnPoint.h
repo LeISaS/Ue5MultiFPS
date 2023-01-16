@@ -6,6 +6,15 @@
 #include "GameFramework/Actor.h"
 #include "PickupSpawnPoint.generated.h"
 
+UENUM(BlueprintType)
+enum class ESpawnState : uint8
+{
+	ESS_Pickup		UMETA(DisplayName = "Pickup"),
+	ESS_Weapon		UMETA(DisplayName = "Weapon"),
+
+	ESS_Max		UMETA(DisplayName = "Max")
+};
+
 UCLASS()
 class FPSGAME_API APickupSpawnPoint : public AActor
 {
@@ -14,10 +23,13 @@ class FPSGAME_API APickupSpawnPoint : public AActor
 public:	
 	APickupSpawnPoint();
 
+	UPROPERTY(EditAnywhere)
+	ESpawnState SpawnState;
+
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SpawnState == ESpawnState::ESS_Pickup"))
 	TArray<TSubclassOf<class APickup>> PickupClasses;
 
 	UPROPERTY()
@@ -27,6 +39,16 @@ protected:
 	void SpawnPickupTimerFinished();
 	UFUNCTION()
 	void StartSpawnPickupTimer(AActor* DestroyedActor);
+
+
+	void SpawnWeaponPickup();
+
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SpawnState == ESpawnState::ESS_Weapon"))
+		TArray<TSubclassOf<class AWeapon>> WeaponClasses;
+
+	UPROPERTY()
+		AWeapon* SpawnedWeapon;
+
 
 private:
 	FTimerHandle SpawnPickupTimer;

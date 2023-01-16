@@ -3,6 +3,7 @@
 
 #include "Pickups/PickupSpawnPoint.h"
 #include "Pickups/Pickup.h"
+#include "Weapon/Weapon.h"
 
 APickupSpawnPoint::APickupSpawnPoint()
 {
@@ -14,6 +15,21 @@ void APickupSpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 	StartSpawnPickupTimer((AActor*)nullptr);
+}
+
+void APickupSpawnPoint::SpawnWeaponPickup()
+{
+	int32 NumPickupClasses = WeaponClasses.Num();
+	if (NumPickupClasses > 0)
+	{
+		int32 Selection = FMath::RandRange(0, NumPickupClasses - 1);
+		SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClasses[Selection], GetActorTransform());
+
+		if (HasAuthority() && SpawnedWeapon)
+		{
+			SpawnedWeapon->OnDestroyed.AddDynamic(this, &ThisClass::StartSpawnPickupTimer);
+		}
+	}
 }
 
 void APickupSpawnPoint::SpawnPickup()
@@ -33,9 +49,13 @@ void APickupSpawnPoint::SpawnPickup()
 
 void APickupSpawnPoint::SpawnPickupTimerFinished()
 {
-	if (HasAuthority())
+	if (HasAuthority() && SpawnState == ESpawnState::ESS_Pickup)
 	{
 		SpawnPickup();
+	}
+	else if (HasAuthority() && SpawnState == ESpawnState::ESS_Weapon)
+	{
+		SpawnWeaponPickup();
 	}
 }
 

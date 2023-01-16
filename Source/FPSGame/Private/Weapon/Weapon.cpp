@@ -47,6 +47,7 @@ void AWeapon::Dropped()
 	SetOwner(nullptr);
 	PlayerOwnerCharacter = nullptr;
 	PlayerOwnerController = nullptr;
+	Destroy();
 }
 
 void AWeapon::BeginPlay()
