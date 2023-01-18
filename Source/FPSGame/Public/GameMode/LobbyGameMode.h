@@ -15,6 +15,10 @@ class FPSGAME_API ALobbyGameMode : public AGameMode
 	GENERATED_BODY()
 
 public:
+	ALobbyGameMode();
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
+	UPROPERTY(EditAnywhere)
+	TArray<FString> LevelName;
+
 };
